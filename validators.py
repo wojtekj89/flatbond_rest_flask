@@ -5,5 +5,12 @@ def validate_postcode(postcode):
     return validation.is_valid_postcode(postcode)
     
 
-def validate_fee(args):
-    return True
+def validate_fee(config, rent, fee):
+    if config:
+        if config.get('fixed_membership_fee'):
+            membership = config.get('fixed_membership_amount') * 1.2
+            return membership == fee
+    
+    minimum = 120 * 1.2 * 100 # 120 GBP + 20% VAT in pences
+    membership_fee = max(rent * 1.2, minimum)
+    return membership_fee == fee
