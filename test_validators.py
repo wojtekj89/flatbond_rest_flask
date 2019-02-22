@@ -9,7 +9,13 @@ class TestValidators(unittest.TestCase):
         self.assertTrue(validators.validate_postcode('W1A0AX')) 
         self.assertTrue(validators.validate_postcode('B338TH')) 
         self.assertFalse(validators.validate_postcode('invalid')) 
-        self.assertFalse(validators.validate_postcode('AAAAAAA')) 
+        self.assertFalse(validators.validate_postcode('AAAAAAA'))
+
+    def test_member_fee(self):
+        minimum = 120 * 1.2 * 100 # 120 GBP + 20% VAT in pences
+        self.assertTrue(validators.validate_fee(None, 100, minimum))
+        self.assertFalse(validators.validate_fee({'fixed_membership_fee': True, 'fixed_membership_amount': 120, 50000, 120 }))
+        self.assertFalse(validators.validate_fee(None, 50000, minimum)
 
 
 if __name__ == '__main__':
