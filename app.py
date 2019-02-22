@@ -40,13 +40,15 @@ class Flatbond(Resource):
         client_id = args.get('client_id')
         postcode = args.get('postcode')
 
-        if any[!rent, !membership_fee, !client_id, !postcode]:
+        if any(not rent, not membership_fee, not client_id, not postcode):
             pass # TODO: handle missing data
 
-        postcode_valid = validators.validate_postcode(args["postcode"])
-        membership_fee_valid = validators.validate_fee(args["membership_fee"])
+        postcode_valid = validators.validate_postcode(str(postcode))
 
-        if any[!membership_fee_valid, !postcode_valid]:
+        user_config = next(item for item in CONFIG if item.get('id') == client_id)
+        membership_fee_valid = validators.validate_fee(user_config, rent, membership_fee)
+
+        if any(not membership_fee_valid, not postcode_valid):
             pass # TODO: handle invalid data
         
         return {'status': 'OK', 'flatbond': args}
