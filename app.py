@@ -1,8 +1,10 @@
 from flask import Flask
+from flask_cors import CORS
 from flask_restful import Resource, Api, reqparse
 import validators
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"*": {"origins": "*"}})
 api = Api(app)
 
 parser = reqparse.RequestParser()
@@ -30,7 +32,7 @@ class Config(Resource):
         if len(config) == 0:
             return {'msg': 'User not found'}, 404
         else:
-            return {'config': config[0]}
+            return {'config': config[0]}, 200, {'Access-Control-Allow-Origin': '*'} 
 
 class Flatbond(Resource):
     def post(self):
