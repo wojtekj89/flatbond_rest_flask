@@ -32,7 +32,7 @@ class Config(Resource):
         if len(config) == 0:
             return {'msg': 'User not found'}, 404
         else:
-            return {'config': config[0]}, 200, {'Access-Control-Allow-Origin': '*'} 
+            return {'config': config[0]}, 200
 
 class Flatbond(Resource):
     def post(self):
@@ -47,15 +47,23 @@ class Flatbond(Resource):
 
         postcode_valid = validators.validate_postcode(str(postcode))
 
-        user_config = next(item for item in CONFIG if item.get('id') == client_id)
-        membership_fee_valid = validators.validate_fee(user_config, rent, membership_fee)
+        try:
+            user_config = next(item for item in CONFIG if item.get('id') == client_id)
+        except StopIteration:
+            user_config = None
 
-        if any([not membership_fee_valid, not postcode_valid]):
+        membership_fee_valid = validators.validate_fee(user_config, rent, membership_fee)
+        rent_valid = validators.validate_rent(rent)
+
+        if any([not membership_fee_valid, not postcode_valid, not rent_valid]):
             if not membership_fee_valid:
                 return {'msg': 'Invalid fee'}, 403
 
             elif not postcode_valid:
                 return {'msg': 'Invalid postcode'}, 403
+            
+            else:
+                return {'msg': "Invalid rent amount"}, 403
         
         return {'status': 'OK', 'flatbond': args}
 
